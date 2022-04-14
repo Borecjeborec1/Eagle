@@ -17,8 +17,6 @@
       "identifier": "com.tauri.dev",
       "icon": [
         "icons/eagle.png",
-        "icons/eagle.png",
-        "icons/eagle.png",
         "icons/eagle.ico",
         "icons/eagle.icns"
       ],
@@ -59,7 +57,9 @@
         "height": 200,
         "resizable": false,
         "fullscreen": false,
-        "decorations": false
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true
       }
     ],
     "security": {
