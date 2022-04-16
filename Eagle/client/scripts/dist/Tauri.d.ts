@@ -1,12 +1,7 @@
 export declare class Tauri {
-    small: {
+    constructor();
+    setSize({ width, height }: {
         width: number;
         height: number;
-    };
-    constructor();
-    spawnWindow({ fullScreen }: {
-        fullScreen?: boolean | undefined;
     }): Promise<void>;
-    spawnSmall(): Promise<void>;
-    spawnFullScreen(): Promise<void>;
 }

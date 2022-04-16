@@ -6,17 +6,23 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eagle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=My+Soul&family=Updock&display=swap" rel="stylesheet">
   <script defer src="./scripts/dist/script.js" type="module"></script>
   <link rel="stylesheet" href="styles/style.css">
 </head>
 
 <body>
-  <div class="bg"></div>
-  <h1>Time's up!</h1>
-  <h4 id="timer">Accept in 30s</h4>
-  <div class="btns">
-    <button class="decline">Delay 5min (1)</button>
-    <button class="accept">Take 30min rest</button>
+  <canvas id="canvas"></canvas>
+  <div id="small">
+    <div class="bg"></div>
+    <h1>Time's up!</h1>
+    <h4 id="timer">Accept in 30s</h4>
+    <div class="btns">
+      <button class="decline">Delay 5min (1)</button>
+      <button class="accept">Take 30min rest</button>
+    </div>
   </div>
 </body>
 

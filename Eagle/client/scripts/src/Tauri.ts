@@ -3,31 +3,16 @@
 const TAURI_WINDOW = window.__TAURI__.window
 
 export class Tauri {
-  small: {
-    width: number
-    height: number
-  }
   constructor() {
-    this.small = {
-      width: 400,
-      height: 200
+  }
+  public async setSize({ width, height }: { width: number, height: number }) {
+    let monitor = await TAURI_WINDOW.primaryMonitor()
+    if (!width && !height) {
+      width = monitor.size.width
+      height = monitor.size.height
     }
-
-  }
-  spawnWindow({ fullScreen = false }) {
-    if (fullScreen)
-      return this.spawnFullScreen()
-    return this.spawnSmall()
+    TAURI_WINDOW.appWindow.setSize(new TAURI_WINDOW.LogicalSize(width, height))
+    TAURI_WINDOW.appWindow.setPosition(new TAURI_WINDOW.LogicalPosition((monitor.size.width - width) / 2, (monitor.size.height - height) / 2))
   }
 
-  async spawnSmall() {
-    let { size } = await TAURI_WINDOW.primaryMonitor()
-    TAURI_WINDOW.appWindow.setSize(new TAURI_WINDOW.LogicalSize(this.small.width, this.small.height))
-    TAURI_WINDOW.appWindow.setPosition(new TAURI_WINDOW.LogicalPosition((size.width - this.small.width) / 2, (size.height - this.small.height) / 2))
-  }
-  async spawnFullScreen() {
-    let { size } = await TAURI_WINDOW.primaryMonitor()
-    TAURI_WINDOW.appWindow.setSize(new TAURI_WINDOW.LogicalSize(size.width, size.height))
-    TAURI_WINDOW.appWindow.setPosition(new TAURI_WINDOW.LogicalPosition(0, 0))
-  }
 }
