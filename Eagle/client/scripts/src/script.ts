@@ -5,11 +5,11 @@ const tauri = new Tauri()
 tauri.setSize({ width: 400, height: 200 })
 
 const smallContent = <HTMLDivElement>document.querySelector("#small")
+const bigContent = <HTMLDivElement>document.querySelector("#big")
 const declineBtn = <HTMLButtonElement>document.querySelector('.decline');
 const acceptBtn = <HTMLButtonElement>document.querySelector('.accept');
 const bg = <HTMLDivElement>document.querySelector('.bg');
 const timerHeading = <HTMLHeadingElement>document.querySelector('#timer');
-const canvas = <HTMLCanvasElement>document.querySelector('#canvas');
 
 const BONUS_TIME = minutes(1);
 
@@ -22,16 +22,19 @@ declineBtn?.addEventListener("mouseout", (): void => {
 
 acceptBtn?.addEventListener("click", (): void => {
   smallContent.style.display = "none";
-  canvas.style.display = "";
-  // tauri.setSize({ width: 400, height: 200 })
+  bigContent.style.display = "";
+
+
+  // tauri.setSize({ width: 800, height: 400 })
   tauri.setSize({ width: 0, height: 0 })
   setTimeout(() => {
+
     handleCanvas()
-  }, 1000)
+  }, 500)
 })
 
 timerHeading.style.opacity = "0";
-canvas.style.display = "none";
+bigContent.style.display = "none";
 
 setTimeout((): void => {
   let timeToAccept: number = 30
@@ -45,22 +48,35 @@ setTimeout((): void => {
 
 
 function handleCanvas() {
+  const blurDiv = <HTMLDivElement>document.querySelector('.blur');
+  const canvas = <HTMLCanvasElement>document.querySelector('#canvas');
+  const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
 
-  let ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
+  canvas.style.opacity = "1";
+  blurDiv.style.opacity = "1";
+
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const particles: Particle[] = [];
 
-  ctx.fillStyle = "white"
-  ctx.font = "30px Arial";
-  ctx.fillText("Take a rest!", 0, 30);
-  const data = ctx.getImageData(0, 0, 200, 100);
-  const mouse = {
-    x: 0,
-    y: 0,
-    radius: 50
+  let timeRemaining = 30;
+  let data: ImageData
+  function getData(min: number) {
+    ctx.fillStyle = "white"
+    ctx.font = "30px 'My soul'";
+    ctx.fillText("Go for a walk", 0, 30);
+    ctx.font = "20px 'My soul'";
+    ctx.fillText(`${min} min`, 50, 40);
+    data = ctx.getImageData(0, 0, 155, 100);
   }
+  getData(timeRemaining)
+  setInterval(() => {
+    particles.length = 0
+    timeRemaining--;
+    getData(timeRemaining)
+    initParticles();
+  }, minutes(1))
+
   let rgbColorsOptions: string[] = ["#38B5FF", "#F71518", "#FDDF5A", "#F9914D", "#228037", "#8C52FF"];
   let rgbColor = {
     red: hexToRgb(rgbColorsOptions[Math.floor(Math.random() * rgbColorsOptions.length)])?.red || 0,
@@ -69,9 +85,55 @@ function handleCanvas() {
     incr: { red: true, green: true, blue: true }
   }
 
-  window.addEventListener("mousemove", (e): void => {
-    mouse.x = e.x
-    mouse.y = e.y
+  const mouse = {
+    x: 0,
+    y: 0,
+    radius: 50
+  }
+  const autoMove: { [key: string]: any } = {
+    x: 300,
+    y: 300,
+    speed: 3,
+    radius: 20,
+    lastMove: { dir: "x", isPlus: true }
+  }
+  function moveAuto() {
+    handleColors()
+    if (autoMove.x < 300) {
+      autoMove.lastMove = { dir: "x", isPlus: true }
+    } else if (canvas.width - autoMove.x < 300) {
+      autoMove.lastMove = { dir: "x", isPlus: false }
+    } else if (autoMove.y < 300) {
+      autoMove.lastMove = { dir: "y", isPlus: true }
+    } else if (canvas.height / 2 - autoMove.y < 100) {
+      autoMove.lastMove = { dir: "y", isPlus: false }
+    }
+
+    if (Math.random() > .02) {
+      if (autoMove.lastMove.isPlus)
+        return autoMove[autoMove.lastMove.dir] += autoMove.speed
+      return autoMove[autoMove.lastMove.dir] -= autoMove.speed
+    }
+    if (Math.random() > 0.5)
+      if (Math.random() > 0.5) {
+        autoMove.lastMove = { dir: "x", isPlus: true }
+        autoMove.x += autoMove.speed;
+      }
+      else {
+        autoMove.lastMove = { dir: "x", isPlus: false }
+        autoMove.x -= autoMove.speed;
+      }
+    else
+      if (Math.random() > 0.5) {
+        autoMove.lastMove = { dir: "y", isPlus: true }
+        autoMove.y += autoMove.speed;
+      }
+      else {
+        autoMove.lastMove = { dir: "y", isPlus: false }
+        autoMove.y -= autoMove.speed;
+      }
+  }
+  function handleColors() {
     switch (Math.floor((Math.random() * 3))) {
       case 0:
         if (rgbColor.incr.red) rgbColor.red += Math.floor((Math.random() * 2))
@@ -92,9 +154,14 @@ function handleCanvas() {
         if (rgbColor.blue < 5) rgbColor.incr.blue = true
         break;
     }
-    console.log(rgbColor)
+  }
+  window.addEventListener("mousemove", (e): void => {
+    mouse.x = e.x
+    mouse.y = e.y
+    handleColors()
   })
 
+  const particles: Particle[] = [];
   class Particle {
     x: number;
     y: number;
@@ -104,15 +171,17 @@ function handleCanvas() {
     color: string;
     oldColor: string;
     speed: number;
+    coloredByMouse: boolean;
     constructor(x: number, y: number) {
       this.radius = 3;
       this.x = x;
       this.y = y
       this.oldX = x;
       this.oldY = y;
-      this.color = `white`;
-      this.oldColor = `white`;
-      this.speed = Math.random() * 30 + 5;
+      this.color = `#38B5FF`;
+      this.oldColor = `#38B5FF`;
+      this.speed = Math.random() * 20 + 5;
+      this.coloredByMouse = false;
     }
     draw(): void {
       ctx.beginPath();
@@ -120,22 +189,26 @@ function handleCanvas() {
       ctx.fillStyle = this.color;
       ctx.fill();
     }
-    update(): void {
-      let dx = mouse.x - this.x;
-      let dy = mouse.y - this.y;
+    update(move: any): void {
+      let dx = move.x - this.x;
+      let dy = (move.y - this.y) // * 1.5 For ellipse shape
       let distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < (mouse.radius + 10)) {
-        let alpha = .5 - (distance / (mouse.radius + 10))
-        if (alpha < 0)
+      if (distance < (move.radius + 10)) {
+        let alpha = .5 - (distance / (move.radius + 10))
+        if (alpha < 0) {
           this.color = `rgba(${rgbColor.red},${rgbColor.green}, ${rgbColor.blue},${alpha + .7})`;
+          this.coloredByMouse = !move.lastMove
+        }
       } else {
-        this.color = `white`;
+        if ((this.coloredByMouse && !move.lastMove) || (move.lastMove && !this.coloredByMouse))
+          this.color = this.oldColor;
       }
-      if (distance < mouse.radius) {
+
+      if (distance < move.radius) {
         let forceX = dx / distance;
         let forceY = dy / distance;
-        let force = (mouse.radius - distance) / mouse.radius;
+        let force = (move.radius - distance) / move.radius;
         let dirX = forceX * force * this.speed;
         let dirY = forceY * force * this.speed;
         this.x -= dirX
@@ -170,8 +243,10 @@ function handleCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(particle => {
       particle.draw();
-      particle.update();
+      particle.update(autoMove);
+      particle.update(mouse);
     });
+    moveAuto()
     connectParticles();
   }
   initParticles()
