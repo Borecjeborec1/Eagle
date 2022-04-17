@@ -2,7 +2,6 @@ import { minutes, seconds, hexToRgb } from "./helpers.js"
 import { Tauri } from "./Tauri.js"
 
 const tauri = new Tauri()
-tauri.setSize({ width: 400, height: 200 })
 
 const smallContent = <HTMLDivElement>document.querySelector("#small")
 const bigContent = <HTMLDivElement>document.querySelector("#big")
@@ -13,6 +12,8 @@ const timerHeading = <HTMLHeadingElement>document.querySelector('#timer');
 
 const BONUS_TIME = minutes(1);
 
+let timeRemaining = 30
+
 declineBtn?.addEventListener("mouseover", (): void => {
   bg.style.backgroundImage = "url(../assets/eagle-red-both.png)";
 })
@@ -21,20 +22,33 @@ declineBtn?.addEventListener("mouseout", (): void => {
 })
 
 acceptBtn?.addEventListener("click", (): void => {
-  smallContent.style.display = "none";
-  bigContent.style.display = "";
+  startRest()
+})
 
 
-  // tauri.setSize({ width: 800, height: 400 })
-  tauri.setSize({ width: 0, height: 0 })
+
+declineBtn?.addEventListener("click", async (): Promise<void> => {
+  const config = JSON.parse(await tauri.readConfig())
+  config.postponed++
+  tauri.writeConfig(config)
   setTimeout(() => {
-
-    handleCanvas()
+    tauri.exit()
   }, 500)
 })
 
-timerHeading.style.opacity = "0";
-bigContent.style.display = "none";
+window.onload = async (): Promise<void> => {
+  timerHeading.style.opacity = "0";
+  bigContent.style.display = "none";
+  const config = JSON.parse(await tauri.readConfig())
+  declineBtn.innerText = `Postpone ${config.maxPostponed - config.postponeTime}min (${config.postponed})`
+  acceptBtn.innerText = `Take ${config.restTime}min rest`
+  timeRemaining = config.restTime
+  if (config.postponed == config.maxPostponed) {
+    startRest()
+  } else {
+    tauri.setSize({ width: 400, height: 200 })
+  }
+}
 
 setTimeout((): void => {
   let timeToAccept: number = 30
@@ -42,15 +56,23 @@ setTimeout((): void => {
   let timerInt: number = setInterval((): void => {
     timerHeading.innerText = `Accept in ${timeToAccept}s`
     timeToAccept--
-    if (timeToAccept === -1) clearInterval(timerInt)
+    if (timeToAccept === -1) {
+      clearInterval(timerInt)
+      startRest()
+    }
   }, 1000)
 }, BONUS_TIME)
 
-
 function handleCanvas() {
+
+
   const blurDiv = <HTMLDivElement>document.querySelector('.blur');
   const canvas = <HTMLCanvasElement>document.querySelector('#canvas');
   const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
+
+  setTimeout(() => {
+    canvas.style.opacity = ".5"
+  }, minutes(1))
 
   canvas.style.opacity = "1";
   blurDiv.style.opacity = "1";
@@ -59,7 +81,6 @@ function handleCanvas() {
   canvas.height = window.innerHeight;
 
 
-  let timeRemaining = 30;
   let data: ImageData
   function getData(min: number) {
     ctx.fillStyle = "white"
@@ -270,3 +291,11 @@ function handleCanvas() {
 }
 
 
+function startRest() {
+  smallContent.style.display = "none";
+  bigContent.style.display = "";
+  tauri.setSize({ width: 0, height: 0 })
+  setTimeout(() => {
+    handleCanvas()
+  }, 500)
+}
