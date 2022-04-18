@@ -63,14 +63,14 @@ setTimeout((): void => {
   }, 1000)
 }, BONUS_TIME)
 
-function handleCanvas() {
+function handleCanvas(): void {
 
 
   const blurDiv = <HTMLDivElement>document.querySelector('.blur');
   const canvas = <HTMLCanvasElement>document.querySelector('#canvas');
   const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
 
-  setTimeout(() => {
+  setTimeout((): void => {
     canvas.style.opacity = ".5"
   }, minutes(1))
 
@@ -82,7 +82,7 @@ function handleCanvas() {
 
 
   let data: ImageData
-  function getData(min: number) {
+  function getData(min: number): void {
     ctx.fillStyle = "white"
     ctx.font = "30px 'My soul'";
     ctx.fillText("Go for a walk", 0, 30);
@@ -91,7 +91,7 @@ function handleCanvas() {
     data = ctx.getImageData(0, 0, 155, 100);
   }
   getData(timeRemaining)
-  setInterval(() => {
+  setInterval((): void => {
     particles.length = 0
     timeRemaining--;
     getData(timeRemaining)
@@ -99,10 +99,11 @@ function handleCanvas() {
   }, minutes(1))
 
   let rgbColorsOptions: string[] = ["#38B5FF", "#F71518", "#FDDF5A", "#F9914D", "#228037", "#8C52FF"];
+  let randColor = rgbColorsOptions[Math.floor(Math.random() * rgbColorsOptions.length)];
   let rgbColor = {
-    red: hexToRgb(rgbColorsOptions[Math.floor(Math.random() * rgbColorsOptions.length)])?.red || 0,
-    green: hexToRgb(rgbColorsOptions[Math.floor(Math.random() * rgbColorsOptions.length)])?.green || 0,
-    blue: hexToRgb(rgbColorsOptions[Math.floor(Math.random() * rgbColorsOptions.length)])?.blue || 0,
+    red: hexToRgb(randColor)?.red || 0,
+    green: hexToRgb(randColor)?.green || 0,
+    blue: hexToRgb(randColor)?.blue || 0,
     incr: { red: true, green: true, blue: true }
   }
 
