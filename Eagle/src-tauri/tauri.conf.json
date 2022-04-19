@@ -53,6 +53,15 @@
         "scope": [
           "*"
         ]
+      },
+      "shell": {
+        "scope": [
+          {
+            "cmd": "",
+            "name": "C:/Users/ZISU00/Desktop/Projects/Projects/JavaScript/Backend/desktop/Eagle_PC_Resting/Eagle/src-tauri/target/debug/app.exe",
+            "sidecar": true
+          }
+        ]
       }
     },
     "windows": [

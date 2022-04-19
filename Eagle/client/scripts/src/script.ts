@@ -292,7 +292,10 @@ function handleCanvas(): void {
 }
 
 
-function startRest() {
+async function startRest() {
+  const config = JSON.parse(await tauri.readConfig())
+  config.postponed = 0
+  tauri.writeConfig(config)
   smallContent.style.display = "none";
   bigContent.style.display = "";
   tauri.setSize({ width: 0, height: 0 })
