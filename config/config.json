@@ -1,6 +1,7 @@
 {
-  "postponed": 1,
+  "postponed": 2,
   "postponeTime": 5,
   "restTime": 30,
-  "maxPostponed": 3
+  "maxPostponed": 3,
+  "waitTime": 2
 }
