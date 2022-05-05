@@ -29,12 +29,12 @@ fn spawn_ui(ui_path: &str, config_path: &str, spawned_by_timer: bool) {
     .unwrap();
 
   if !spawned_by_timer {
-    // create variable now which will correspond to the current time as seconds since January 1, 1970 0:00:00 UTC
     let now = chrono::Utc::now().timestamp();
-    if now - config["lastOpen"].as_i64().unwrap() < 60 * config["restTime"].as_i64().unwrap() / 2 {
-      println!("{}", now);
+    let time_between = now - config["last_spawn"].as_i64().unwrap();
+    if time_between < 60 * config["restTime"].as_i64().unwrap() / 2 {
+      // cant open ui too often
+      return;
     }
-    println!("{}", now);
   }
 
   // spawn ui
