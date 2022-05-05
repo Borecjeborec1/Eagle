@@ -7,6 +7,8 @@ fn main() {
   const CONFIG_PATH: &str = "../config/config.json";
   const UI_PATH: &str = "../Eagle/src-tauri/target/debug/app.exe";
   const REST_TIME: u64 = 30;
+
+  // listen to hotkeys
   let mut hk = hotkey::Listener::new();
   hk.register_hotkey(
     hotkey::modifiers::CONTROL | hotkey::modifiers::SHIFT,
@@ -15,6 +17,8 @@ fn main() {
   )
   .unwrap();
   hk.listen();
+
+  // timer
   loop {
     std::thread::sleep(minutes(REST_TIME));
     spawn_ui(UI_PATH, CONFIG_PATH, true);
@@ -30,7 +34,7 @@ fn spawn_ui(ui_path: &str, config_path: &str, spawned_by_timer: bool) {
 
   if !spawned_by_timer {
     let now = chrono::Utc::now().timestamp();
-    let time_between = now - config["last_spawn"].as_i64().unwrap();
+    let time_between = now - config["lastOpen"].as_i64().unwrap();
     if time_between < 60 * config["restTime"].as_i64().unwrap() / 2 {
       // cant open ui too often
       return;
