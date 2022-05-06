@@ -304,6 +304,7 @@ function handleCanvas(): void {
 async function startRest(): Promise<void> {
   const config = JSON.parse(await tauri.readConfig())
   config.postponed = 0
+  config.lastOpen = Date.now()
   tauri.writeConfig(config)
   smallContent.style.display = "none";
   bigContent.style.display = "";
