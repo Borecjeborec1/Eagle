@@ -6,8 +6,13 @@ use std::process::Command;
 fn main() {
   const CONFIG_PATH: &str = "../config/config.json";
   const UI_PATH: &str = "../Eagle/src-tauri/target/debug/app.exe";
-  const REST_TIME: u64 = 30;
+  let config = fs::read_to_string(CONFIG_PATH)
+    .expect("Failed to open config file before ui")
+    .parse::<serde_json::Value>()
+    .unwrap();
 
+  std::thread::sleep(minutes(config["oftenTime"].as_u64().unwrap()));
+  spawn_ui(UI_PATH, CONFIG_PATH, true);
   // listen to hotkeys
   let mut hk = hotkey::Listener::new();
   hk.register_hotkey(
@@ -17,15 +22,10 @@ fn main() {
   )
   .unwrap();
   hk.listen();
-
-  // timer
-  loop {
-    std::thread::sleep(minutes(REST_TIME));
-    spawn_ui(UI_PATH, CONFIG_PATH, true);
-  }
 }
 
 fn spawn_ui(ui_path: &str, config_path: &str, spawned_by_timer: bool) {
+  println!("Spawning UI...");
   // read config file
   let config = fs::read_to_string(config_path)
     .expect("Failed to open config file before ui")
@@ -63,7 +63,7 @@ fn spawn_ui(ui_path: &str, config_path: &str, spawned_by_timer: bool) {
     .parse::<serde_json::Value>()
     .unwrap();
 
-  // if postpone is higher than postpone before, then postpone (if not, then don't)
+  // if postpone is higher than postpone before, then postpone
   if config["postponed"] != config_after_action["postponed"]
     && config_after_action["postponed"] != "0"
   {
@@ -75,6 +75,10 @@ fn spawn_ui(ui_path: &str, config_path: &str, spawned_by_timer: bool) {
     std::thread::sleep(minutes(
       config["restTime"].to_string().parse::<u64>().unwrap(),
     ));
+    std::thread::sleep(minutes(
+      config["oftenTime"].to_string().parse::<u64>().unwrap(),
+    ));
+
     spawn_ui(ui_path, config_path, true)
   }
 }
