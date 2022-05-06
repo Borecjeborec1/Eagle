@@ -37,12 +37,21 @@ declineBtn?.addEventListener("click", async (): Promise<void> => {
 })
 
 window.onload = async (): Promise<void> => {
+  let args = await tauri.getArgs()
   timerHeading.style.opacity = "0";
   bigContent.style.display = "none";
   const config = JSON.parse(await tauri.readConfig())
+
   declineBtn.innerText = `Postpone ${config.maxPostponed - config.postponeTime}min (${config.postponed})`
   acceptBtn.innerText = `Take ${config.restTime}min rest`
   timeRemaining = config.restTime
+  if (args.includes("canStart"))
+    declineBtn.style.opacity = "0";
+  else if (args.includes("cantStartOften")) {
+    acceptBtn.style.opacity = "0";
+    declineBtn.innerText = `You have to wait...`
+  }
+  console.log(args)
   if (config.postponed == config.maxPostponed) {
     startRest()
   } else {
@@ -292,7 +301,7 @@ function handleCanvas(): void {
 }
 
 
-async function startRest() {
+async function startRest(): Promise<void> {
   const config = JSON.parse(await tauri.readConfig())
   config.postponed = 0
   tauri.writeConfig(config)

@@ -36,9 +36,17 @@ fn spawn_ui(ui_path: &str, config_path: &str, spawned_by_timer: bool) {
     let now = chrono::Utc::now().timestamp();
     let time_between = now - config["lastOpen"].as_i64().unwrap();
     if time_between < 60 * config["restTime"].as_i64().unwrap() / 2 {
-      // cant open ui too often
+      Command::new(ui_path)
+        .arg("canStartOften")
+        .spawn()
+        .expect("Failed to spawn ui");
       return;
     }
+    Command::new(ui_path)
+      .arg("canStart")
+      .spawn()
+      .expect("Failed to spawn ui");
+    return;
   }
 
   // spawn ui

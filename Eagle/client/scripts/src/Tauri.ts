@@ -8,6 +8,12 @@ export class Tauri {
   constructor() {
     this.isDev = true
   }
+
+  public async getArgs() {
+    const invoke = TAURI.invoke
+    let args = await invoke("get_args")
+    return args
+  }
   public async setSize({ width, height }: { width: number, height: number }) {
     let monitor = await TAURI_WINDOW.primaryMonitor()
     if (!width && !height) {

@@ -1,8 +1,1 @@
-{
-  "postponed": 2,
-  "postponeTime": 5,
-  "restTime": 30,
-  "maxPostponed": 3,
-  "waitTime": 2,
-  "lastOpen": 1651770915
-}
+{"postponed":0,"postponeTime":5,"restTime":30,"maxPostponed":3,"waitTime":2,"lastOpen":1651770915}
