@@ -1,5 +1,3 @@
-# arguments in ui
+# time calculation: you have to wait...
 
-# frontend file writing optimalization (lastOpen, postponed,...)
-
-# time calculation in you have to wait
+# if user accept on keyboardshortcut, reset timer for next time

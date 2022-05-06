@@ -33,7 +33,7 @@ declineBtn?.addEventListener("click", async (): Promise<void> => {
   tauri.writeConfig(config)
   setTimeout(() => {
     tauri.exit()
-  }, 500)
+  }, 50)
 })
 
 window.onload = async (): Promise<void> => {
@@ -41,8 +41,8 @@ window.onload = async (): Promise<void> => {
   timerHeading.style.opacity = "0";
   bigContent.style.display = "none";
   const config = JSON.parse(await tauri.readConfig())
-
-  declineBtn.innerText = `Postpone ${config.maxPostponed - config.postponeTime}min (${config.postponed})`
+  const MAX_POSTPONED = 3
+  declineBtn.innerText = `Postpone ${config.postponeTime}min (${MAX_POSTPONED - config.postponed})`
   acceptBtn.innerText = `Take ${config.restTime}min rest`
   timeRemaining = config.restTime
   if (args.includes("canStart"))
@@ -52,7 +52,7 @@ window.onload = async (): Promise<void> => {
     declineBtn.innerText = `You have to wait...`
   }
   console.log(args)
-  if (config.postponed == config.maxPostponed) {
+  if (config.postponed == MAX_POSTPONED) {
     startRest()
   } else {
     tauri.setSize({ width: 400, height: 200 })
@@ -73,8 +73,6 @@ setTimeout((): void => {
 }, BONUS_TIME)
 
 function handleCanvas(): void {
-
-
   const blurDiv = <HTMLDivElement>document.querySelector('.blur');
   const canvas = <HTMLCanvasElement>document.querySelector('#canvas');
   const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
@@ -312,4 +310,7 @@ async function startRest(): Promise<void> {
   setTimeout(() => {
     handleCanvas()
   }, 500)
+  setTimeout(() => {
+    tauri.exit()
+  }, config.restTime * 1000 * 60)
 }
