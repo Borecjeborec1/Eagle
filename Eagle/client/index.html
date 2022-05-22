@@ -11,9 +11,32 @@
 </head>
 
 <body>
+  <script>
+    function handleExcClick(el) {
+      el.style.opacity = el.style.opacity == 1 ? .5 : 1
+    }
+  </script>
   <div id="big">
     <canvas id="canvas"></canvas>
     <div class="blur">Hello there</div>
+    <div id="excercises">
+      <div class="excBox" onclick="handleExcClick(this)">
+        <p class="excText">10-15 reps</p>
+        <div class="excImage"></div>
+      </div>
+      <div class="excBox" onclick="handleExcClick(this)">
+        <p class="excText">10-15 reps</p>
+        <div class="excImage"></div>
+      </div>
+      <div class="excBox" onclick="handleExcClick(this)">
+        <p class="excText">10-15 reps</p>
+        <div class="excImage"></div>
+      </div>
+      <div class="excBox" onclick="handleExcClick(this)">
+        <p class="excText">10-15 reps</p>
+        <div class="excImage"></div>
+      </div>
+    </div>
   </div>
   <div id="small">
     <div class="bg"></div>

@@ -77,10 +77,6 @@ function handleCanvas(): void {
   const canvas = <HTMLCanvasElement>document.querySelector('#canvas');
   const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
 
-  setTimeout((): void => {
-    canvas.style.opacity = ".5"
-  }, minutes(1))
-
   canvas.style.opacity = "1";
   blurDiv.style.opacity = "1";
 
@@ -92,10 +88,10 @@ function handleCanvas(): void {
   function getData(min: number): void {
     ctx.fillStyle = "white"
     ctx.font = "30px 'My soul'";
-    ctx.fillText("Go for a walk", 0, 30);
+    ctx.fillText("Take your time", 0, 30);
     ctx.font = "20px 'My soul'";
-    ctx.fillText(`${min} min`, 50, 40);
-    data = ctx.getImageData(0, 0, 155, 100);
+    ctx.fillText(`${min} min`, 100, 40);
+    data = ctx.getImageData(0, 0, 200, 100);
   }
   getData(timeRemaining)
   setInterval((): void => {
@@ -254,8 +250,8 @@ function handleCanvas(): void {
     }
   }
   const textOffset = {
-    x: 190,
-    y: 100
+    x: 100,
+    y: 50
   }
   function initParticles(): void {
     for (let x = 0; x < data.width; ++x) {
@@ -309,8 +305,25 @@ async function startRest(): Promise<void> {
   tauri.setSize({ width: 0, height: 0 })
   setTimeout(() => {
     handleCanvas()
+    spawnExcercises()
   }, 500)
   setTimeout(() => {
     tauri.exit()
   }, config.restTime * 1000 * 60)
 }
+const excercises = [[{ duration: "10-15", asset: "overback" }, { duration: "5-10", asset: "cobra" }, { duration: "5-10", asset: "oneside" }, { duration: "10-15", asset: "wallback" }]]
+function spawnExcercises(): void {
+  let excercisesDiv = <HTMLDivElement>document.querySelector("#excercises")
+  excercisesDiv.style.opacity = "1";
+  let excTexts = <NodeListOf<HTMLParagraphElement>>document.querySelectorAll(".excText")
+  let excImages = <NodeListOf<HTMLDivElement>>document.querySelectorAll(".excImage")
+  let excType = Math.floor(Math.random() * excercises.length)
+  if (excTexts.length != excImages.length)
+    return
+
+  for (let i = 0; i < excTexts.length; i++) {
+    excTexts[i].innerText = `${excercises[excType][i].duration} reps`
+    excImages[i].style.backgroundImage = `url(./assets/${excercises[excType][i].asset}.svg)`
+  }
+}
+
