@@ -311,7 +311,20 @@ async function startRest(): Promise<void> {
     tauri.exit()
   }, config.restTime * 1000 * 60)
 }
-const excercises = [[{ duration: "10-15", asset: "overback" }, { duration: "5-10", asset: "cobra" }, { duration: "5-10", asset: "oneside" }, { duration: "10-15", asset: "wallback" }]]
+const excercises = [
+  [
+    { duration: "10-15 reps", asset: "over-and-back" },
+    { duration: "5-10 reps", asset: "cobra-pose" },
+    { duration: "5-10 reps", asset: "stand-and-reach" },
+    { duration: "10-15 reps", asset: "wall-slides" }
+  ],
+  [
+    { duration: "10 reps", asset: "quadruplet-thoracic-rotation" },
+    { duration: "30-40 sec", asset: "kneeling-hip-stretch" },
+    { duration: "30-45 sec", asset: "pigeon-stretch" },
+    { duration: "10-15 reps", asset: "glute-bridge" }
+  ],
+]
 function spawnExcercises(): void {
   let excercisesDiv = <HTMLDivElement>document.querySelector("#excercises")
   excercisesDiv.style.opacity = "1";
@@ -322,8 +335,8 @@ function spawnExcercises(): void {
     return
 
   for (let i = 0; i < excTexts.length; i++) {
-    excTexts[i].innerText = `${excercises[excType][i].duration} reps`
-    excImages[i].style.backgroundImage = `url(./assets/${excercises[excType][i].asset}.svg)`
+    excTexts[i].innerText = `${excercises[excType][i].duration}`
+    excImages[i].style.backgroundImage = `url(./assets/excercises/${excercises[excType][i].asset}.svg)`
   }
 }
 
