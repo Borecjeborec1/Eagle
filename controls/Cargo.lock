@@ -27,6 +27,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "hotkey",
+ "lazy_static",
  "serde_json",
 ]
 

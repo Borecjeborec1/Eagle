@@ -10,12 +10,29 @@ const acceptBtn = <HTMLButtonElement>document.querySelector('.accept');
 const bg = <HTMLDivElement>document.querySelector('.bg');
 const timerHeading = <HTMLHeadingElement>document.querySelector('#timer');
 
-const BONUS_TIME = minutes(1);
+const MAX_POSTPONED: number = 3
 
-let timeRemaining = 30
+let timeRemaining: number = 5
+let timeToAccept: number = 60
+let currentExcercise: number = 0;
+const excercises = [
+  [
+    { duration: "10-15 reps", asset: "over-and-back" },
+    { duration: "5-10 reps", asset: "cobra-pose" },
+    { duration: "5-10 reps", asset: "stand-and-reach" },
+    { duration: "10-15 reps", asset: "wall-slides" }
+  ],
+  [
+    { duration: "10 reps", asset: "quadruplet-thoracic-rotation" },
+    { duration: "30-40 sec", asset: "kneeling-hip-stretch" },
+    { duration: "30-45 sec", asset: "pigeon-stretch" },
+    { duration: "10-15 reps", asset: "glute-bridge" }
+  ],
+]
 
 declineBtn?.addEventListener("mouseover", (): void => {
-  bg.style.backgroundImage = "url(../assets/eagle-red-both.png)";
+  if (declineBtn.innerText.includes("postpone"))
+    bg.style.backgroundImage = "url(../assets/eagle-red-both.png)";
 })
 declineBtn?.addEventListener("mouseout", (): void => {
   bg.style.backgroundImage = "url(../assets/eagle.png)";
@@ -38,29 +55,25 @@ declineBtn?.addEventListener("click", async (): Promise<void> => {
 
 window.onload = async (): Promise<void> => {
   let args = await tauri.getArgs()
+  const config = JSON.parse(await tauri.readConfig())
+
   timerHeading.style.opacity = "0";
   bigContent.style.display = "none";
-  const config = JSON.parse(await tauri.readConfig())
-  const MAX_POSTPONED = 3
   declineBtn.innerText = `Postpone ${config.postponeTime}min (${MAX_POSTPONED - config.postponed})`
   acceptBtn.innerText = `Take ${config.restTime}min rest`
   timeRemaining = config.restTime
   if (args.includes("canStart"))
-    declineBtn.style.opacity = "0";
+    declineBtn.style.display = "none"
   else if (args.includes("cantStartOften")) {
-    acceptBtn.style.opacity = "0";
+    acceptBtn.style.display = "none"
     declineBtn.innerText = `You have to wait...`
   }
-  console.log(args)
   if (config.postponed == MAX_POSTPONED) {
     startRest()
   } else {
     tauri.setSize({ width: 400, height: 200 })
   }
-}
 
-setTimeout((): void => {
-  let timeToAccept: number = 30
   timerHeading.style.opacity = "1";
   let timerInt: number = setInterval((): void => {
     timerHeading.innerText = `Accept in ${timeToAccept}s`
@@ -70,7 +83,9 @@ setTimeout((): void => {
       startRest()
     }
   }, 1000)
-}, BONUS_TIME)
+}
+
+
 
 function handleCanvas(): void {
   const blurDiv = <HTMLDivElement>document.querySelector('.blur');
@@ -299,6 +314,11 @@ async function startRest(): Promise<void> {
   const config = JSON.parse(await tauri.readConfig())
   config.postponed = 0
   config.lastOpen = Date.now()
+  currentExcercise = config.excercise
+  if (config.excercise < excercises.length)
+    config.excercise++
+  else
+    config.excercise = 0
   tauri.writeConfig(config)
   smallContent.style.display = "none";
   bigContent.style.display = "";
@@ -309,34 +329,20 @@ async function startRest(): Promise<void> {
   }, 500)
   setTimeout(() => {
     tauri.exit()
-  }, config.restTime * 1000 * 60)
+  }, minutes(config.restTime))
 }
-const excercises = [
-  [
-    { duration: "10-15 reps", asset: "over-and-back" },
-    { duration: "5-10 reps", asset: "cobra-pose" },
-    { duration: "5-10 reps", asset: "stand-and-reach" },
-    { duration: "10-15 reps", asset: "wall-slides" }
-  ],
-  [
-    { duration: "10 reps", asset: "quadruplet-thoracic-rotation" },
-    { duration: "30-40 sec", asset: "kneeling-hip-stretch" },
-    { duration: "30-45 sec", asset: "pigeon-stretch" },
-    { duration: "10-15 reps", asset: "glute-bridge" }
-  ],
-]
+
 function spawnExcercises(): void {
   let excercisesDiv = <HTMLDivElement>document.querySelector("#excercises")
   excercisesDiv.style.opacity = "1";
   let excTexts = <NodeListOf<HTMLParagraphElement>>document.querySelectorAll(".excText")
   let excImages = <NodeListOf<HTMLDivElement>>document.querySelectorAll(".excImage")
-  let excType = Math.floor(Math.random() * excercises.length)
   if (excTexts.length != excImages.length)
     return
 
   for (let i = 0; i < excTexts.length; i++) {
-    excTexts[i].innerText = `${excercises[excType][i].duration}`
-    excImages[i].style.backgroundImage = `url(./assets/excercises/${excercises[excType][i].asset}.svg)`
+    excTexts[i].innerText = `${excercises[currentExcercise][i].duration}`
+    excImages[i].style.backgroundImage = `url(./assets/excercises/${excercises[currentExcercise][i].asset}.svg)`
   }
 }
 
