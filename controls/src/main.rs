@@ -15,7 +15,7 @@ lazy_static! {
 }
 
 fn main() {
-  std::thread::sleep(minutes(CONFIG["oftenTime"].as_u64().unwrap()));
+  std::thread::sleep(minutes(CONFIG["appStartTime"].as_u64().unwrap()));
   spawn_ui();
   // listen to hotkeys
   let mut hk = hotkey::Listener::new();
@@ -31,7 +31,7 @@ fn main() {
 fn spawn_ui_with_key() {
   let now = chrono::Utc::now().timestamp();
   let time_between = now - CONFIG["lastOpen"].as_i64().unwrap();
-  if time_between < 60 * CONFIG["oftenTime"].as_i64().unwrap() / 2 {
+  if time_between < 60 * CONFIG["appStartTime"].as_i64().unwrap() / 2 {
     Command::new(UI_PATH)
       .arg("cantStartOften")
       .spawn()
@@ -48,7 +48,10 @@ fn spawn_ui() {
   Command::new(UI_PATH).spawn().expect("Failed to spawn ui");
 
   std::thread::sleep(minutes(
-    CONFIG["waitTime"].to_string().parse::<u64>().unwrap(),
+    CONFIG["waitTillAcceptTime"]
+      .to_string()
+      .parse::<u64>()
+      .unwrap(),
   ));
 
   let config_after_action = fs::read_to_string(CONFIG_PATH)
@@ -60,7 +63,10 @@ fn spawn_ui() {
     && config_after_action["postponed"] != "0"
   {
     std::thread::sleep(minutes(
-      CONFIG["postponeTime"].to_string().parse::<u64>().unwrap(),
+      CONFIG["waitWhenPostponedTime"]
+        .to_string()
+        .parse::<u64>()
+        .unwrap(),
     ));
     spawn_ui()
   } else {
@@ -68,7 +74,7 @@ fn spawn_ui() {
       CONFIG["restTime"].to_string().parse::<u64>().unwrap(),
     ));
     std::thread::sleep(minutes(
-      CONFIG["oftenTime"].to_string().parse::<u64>().unwrap(),
+      CONFIG["appStartTime"].to_string().parse::<u64>().unwrap(),
     ));
 
     spawn_ui()

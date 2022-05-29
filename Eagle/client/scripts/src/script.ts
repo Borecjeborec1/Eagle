@@ -27,7 +27,7 @@ const excercises = [
     { duration: "30-40 sec", asset: "kneeling-hip-stretch" },
     { duration: "30-45 sec", asset: "pigeon-stretch" },
     { duration: "10-15 reps", asset: "glute-bridge" }
-  ],
+  ]
 ]
 
 declineBtn?.addEventListener("mouseover", (): void => {
@@ -59,7 +59,7 @@ window.onload = async (): Promise<void> => {
 
   timerHeading.style.opacity = "0";
   bigContent.style.display = "none";
-  declineBtn.innerText = `Postpone ${config.postponeTime}min (${MAX_POSTPONED - config.postponed})`
+  declineBtn.innerText = `Postpone ${config.waitWhenPostponedTime}min (${MAX_POSTPONED - config.postponed})`
   acceptBtn.innerText = `Take ${config.restTime}min rest`
   timeRemaining = config.restTime
   if (args.includes("canStart"))
