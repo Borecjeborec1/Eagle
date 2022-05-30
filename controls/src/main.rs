@@ -17,7 +17,6 @@ lazy_static! {
 fn main() {
   std::thread::sleep(minutes(CONFIG["appStartTime"].as_u64().unwrap()));
   spawn_ui();
-  // listen to hotkeys
   let mut hk = hotkey::Listener::new();
   hk.register_hotkey(
     hotkey::modifiers::CONTROL | hotkey::modifiers::SHIFT,
@@ -29,6 +28,7 @@ fn main() {
 }
 
 fn spawn_ui_with_key() {
+  println!("clicked");
   let now = chrono::Utc::now().timestamp();
   let time_between = now - CONFIG["lastOpen"].as_i64().unwrap();
   if time_between < 60 * CONFIG["appStartTime"].as_i64().unwrap() / 2 {
