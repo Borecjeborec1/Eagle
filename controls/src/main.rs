@@ -15,16 +15,19 @@ lazy_static! {
 }
 
 fn main() {
+  std::thread::spawn(||{
+    let mut hk = hotkey::Listener::new();
+    hk.register_hotkey(
+      hotkey::modifiers::CONTROL | hotkey::modifiers::SHIFT,
+      'E' as u32,
+      || spawn_ui_with_key(),
+    )
+    .unwrap();
+    hk.listen();
+  });
   std::thread::sleep(minutes(CONFIG["appStartTime"].as_u64().unwrap()));
   spawn_ui();
-  let mut hk = hotkey::Listener::new();
-  hk.register_hotkey(
-    hotkey::modifiers::CONTROL | hotkey::modifiers::SHIFT,
-    'E' as u32,
-    || spawn_ui_with_key(),
-  )
-  .unwrap();
-  hk.listen();
+
 }
 
 fn spawn_ui_with_key() {
