@@ -47,6 +47,11 @@ fn spawn_ui_with_key() {
 }
 
 fn spawn_ui() {
+  let now = chrono::Utc::now().timestamp();
+  if now < CONFIG["lastOpen"].as_i64().unwrap() + 60 * CONFIG["appStartTime"].as_i64().unwrap() {
+    let time_between = now - CONFIG["lastOpen"].as_i64().unwrap();
+    std::thread::sleep(minutes(time_between.try_into().unwrap()));
+  };
   Command::new(UI_PATH).spawn().expect("Failed to spawn ui");
 
   std::thread::sleep(minutes(
@@ -77,7 +82,7 @@ fn spawn_ui() {
       CONFIG["appStartTime"].to_string().parse::<u64>().unwrap(),
     ));
 
-    spawn_ui();
+    spawn_ui()
   }
 }
 fn minutes(minutes: u64) -> std::time::Duration {
