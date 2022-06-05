@@ -47,6 +47,7 @@ acceptBtn?.addEventListener("click", (): void => {
 declineBtn?.addEventListener("click", async (): Promise<void> => {
   const config = JSON.parse(await tauri.readConfig())
   config.postponed++
+  config.didNotAccept = true
   tauri.writeConfig(config)
   setTimeout(() => {
     tauri.exit()
@@ -319,6 +320,7 @@ async function startRest(): Promise<void> {
     config.excercise++
   else
     config.excercise = 0
+  config.didNotAccept = false
   tauri.writeConfig(config)
   smallContent.style.display = "none";
   bigContent.style.display = "";

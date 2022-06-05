@@ -15,7 +15,7 @@ lazy_static! {
 }
 
 fn main() {
-  std::thread::spawn(||{
+  std::thread::spawn(|| {
     let mut hk = hotkey::Listener::new();
     hk.register_hotkey(
       hotkey::modifiers::CONTROL | hotkey::modifiers::SHIFT,
@@ -27,7 +27,6 @@ fn main() {
   });
   std::thread::sleep(minutes(CONFIG["appStartTime"].as_u64().unwrap()));
   spawn_ui();
-
 }
 
 fn spawn_ui_with_key() {
@@ -62,9 +61,7 @@ fn spawn_ui() {
     .parse::<serde_json::Value>()
     .unwrap();
 
-  if CONFIG["postponed"] != config_after_action["postponed"]
-    && config_after_action["postponed"] != "0"
-  {
+  if config_after_action["didNotAccept"] == true {
     std::thread::sleep(minutes(
       CONFIG["waitWhenPostponedTime"]
         .to_string()
@@ -80,7 +77,7 @@ fn spawn_ui() {
       CONFIG["appStartTime"].to_string().parse::<u64>().unwrap(),
     ));
 
-    spawn_ui()
+    spawn_ui();
   }
 }
 fn minutes(minutes: u64) -> std::time::Duration {

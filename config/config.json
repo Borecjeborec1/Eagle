@@ -1,1 +1,10 @@
-{"postponed":1,"waitWhenPostponedTime":3,"appStartTime":30,"restTime":5,"waitTillAcceptTime":2,"lastOpen":1653925338321,"excercise":0}
+{
+  "postponed": 0,
+  "waitWhenPostponedTime": 3,
+  "appStartTime": 30,
+  "restTime": 5,
+  "waitTillAcceptTime": 2,
+  "lastOpen": 1654453885464,
+  "excercise": 1,
+  "didNotAccept": false
+}
